@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pedidos SISREG/SER</title>
+<meta name="theme-color" content="#0f5e57">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root{--bg:#f4f6f5;--card:#fff;--tx:#1d2724;--mut:#62706c;--line:#dde3e1;--pri:#0f5e57;--pri2:#e3f0ee;
+--r:#c62828;--y:#c99a06;--g:#2e7d32;--b:#1565c0;--n:#8a9490;--e:#7b1fa2}
+@media (prefers-color-scheme:dark){:root{--bg:#121716;--card:#1b2221;--tx:#e6ecea;--mut:#9aa7a3;--line:#2c3533;--pri:#4fb3a7;--pri2:#1f3431}}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+header{position:sticky;top:0;z-index:5;background:var(--pri);color:#fff;padding:12px 16px calc(12px) ;padding-top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;gap:10px}
+header h1{font-size:17px;margin:0;flex:1;font-weight:600}
+header button{background:rgba(255,255,255,.15);color:#fff;border:0;border-radius:8px;padding:6px 10px;font-size:14px}
+main{max-width:760px;margin:0 auto;padding:14px 14px 120px}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:64px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--pri);border-color:transparent}
+.chips{display:flex;gap:6px;overflow-x:auto;margin:10px 0 4px;padding-bottom:4px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:99px;padding:6px 12px;font-size:13px;white-space:nowrap}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.lista{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.it{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:left;font:inherit;color:inherit;width:100%}
+.it b{flex:1;font-weight:600}
+.tag{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;letter-spacing:.3px}
+.tag.ENF{background:#fff3e0;color:#b45309}.tag.FLX{background:#eceff1;color:#455a64}
+.tag.SISREG{background:var(--pri2);color:var(--pri)}.tag.SER{background:#f3e5f5;color:#7b1fa2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.card h2{font-size:16px;margin:0 0 8px}
+.meta{font-size:13px;color:var(--mut)}
+.meta code{background:var(--pri2);color:var(--pri);padding:1px 5px;border-radius:5px;font-size:12.5px}
+.info{margin:8px 0 0;padding-left:18px;font-size:13.5px}
+.info li{margin:3px 0}
+.nao{font-size:13px;color:var(--mut)}
+.crit{display:flex;gap:10px;align-items:flex-start;padding:8px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.crit:last-child{border:0}
+.crit input{width:20px;height:20px;margin:1px 0 0;flex:none;accent-color:var(--pri)}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;margin-top:4px}
+.dot.r{background:var(--r)}.dot.y{background:var(--y)}.dot.g{background:var(--g)}.dot.b{background:var(--b)}.dot.n{background:var(--n)}.dot.e{background:var(--e)}
+.crit.e span{color:var(--e);font-weight:600}
+details.grp{border-top:1px solid var(--line)}details.grp:first-child{border-top:0}
+details.grp summary{cursor:pointer;padding:10px 2px;font-weight:600;font-size:14px;list-style:none;display:flex;gap:6px;align-items:center}
+details.grp summary::before{content:"▸";color:var(--mut);transition:.15s}details.grp[open] summary::before{transform:rotate(90deg)}
+details.grp summary::-webkit-details-marker{display:none}
+details.grp .cnt{color:var(--pri);font-weight:600;font-size:12.5px}
+details.grp.prio summary{color:var(--pri)}
+details.grp>div{padding-left:6px}
+.f{margin:10px 0}
+.f label{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.f label .req{color:var(--r)}
+.f.chk label{display:flex;gap:10px;align-items:center;font-weight:500;font-size:14.5px}
+.f.chk input{width:20px;height:20px;accent-color:var(--pri)}
+.f.miss input,.f.miss textarea,.f.miss select{border-color:var(--r);background:color-mix(in srgb,var(--r) 6%,var(--card))}
+.alerta{border-radius:12px;padding:12px 14px;margin:12px 0;font-size:14px}
+.alerta.emerg{background:#f3e5f5;color:#4a148c;border:1px solid #ce93d8}
+.alerta.warn{background:#fff8e1;color:#6d4c00;border:1px solid #ffe082}
+@media (prefers-color-scheme:dark){.alerta.emerg{background:#2a1530;color:#e1bee7;border-color:#6a1b9a}.alerta.warn{background:#2b250f;color:#ffe082;border-color:#6d5a10}}
+.cor{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:13px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px 14px max(10px,env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center;z-index:6}
+.bar>div{max-width:760px;width:100%;display:flex;gap:8px}
+.btn{flex:1;border:0;border-radius:12px;padding:13px;font:600 15px system-ui;background:var(--pri);color:#fff}
+.btn.sec{background:var(--pri2);color:var(--pri);flex:0 0 auto;padding:13px 16px}
+#saida{min-height:260px;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+.cont{font-size:12px;color:var(--mut);text-align:right;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+.rod{font-size:12px;color:var(--mut);text-align:center;margin-top:24px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <button id="voltar" class="hidden" aria-label="Voltar">‹ Lista</button>
+  <h1 id="titulo">Pedidos SISREG / SER</h1>
+</header>
+
+<main>
+  <!-- LISTA -->
+  <section id="vLista">
+    <input id="busca" type="search" placeholder="Buscar especialidade, exame ou procedimento…" autocomplete="off">
+    <div class="chips" id="chips"></div>
+    <div class="lista" id="lista"></div>
+    <p class="rod">Nenhum dado é salvo ou enviado: tudo fica só nesta tela e some ao limpar ou fechar.<br>
+    Base: 26 Protocolos de Regulação Ambulatorial SMS-Rio (2023–2025), Manual de Regulação Ambulatorial 2026, Programa de Controle da Obesidade (03/2026), avisos do Complexo Regulador (nov/2026), Protocolo do Regulador (2015) e Carteira APS-Rio (2021). Confira sempre a nomenclatura vigente no sistema.</p>
+  </section>
+
+  <!-- FORMULÁRIO -->
+  <section id="vForm" class="hidden">
+    <div class="card" id="cabecalho"></div>
+    <div id="emerg" class="alerta emerg hidden"><b>⚠ Critério de emergência marcado.</b> Não é caso para SISREG ambulatorial — encaminhar por <b>Vaga Zero</b> / UPA / emergência, com Guia de Referência e avaliação médica escrita.</div>
+    <div class="card" id="cCrit"><h2>Critérios <span class="meta">(marque os que se aplicam)</span></h2><p class="meta" id="dicaCrit" style="margin:0 0 6px">Marque a indicação clínica (grupos abaixo) e a classificação de prioridade correspondente — é ela que define a cor sugerida.</p><div id="crit"></div><div id="corAtual" class="meta" style="margin-top:8px"></div></div>
+    <div class="card"><h2>Informações clínicas</h2><p class="meta" style="margin:0">Sem nome, prontuário ou documento — só dados clínicos.</p><div id="campos"></div></div>
+    <div id="vSaida" class="hidden">
+      <div id="avisos"></div>
+      <div class="card">
+        <h2 id="tituloSaida">Pedido pronto <span class="meta">(pode editar antes de copiar)</span></h2>
+        <textarea id="saida" spellcheck="false"></textarea>
+        <div class="cont" id="cont"></div>
+      </div>
+      <div class="card" id="checklist"><h2>Antes de enviar</h2><ul class="info">
+        <li>Conferir se o paciente já tem solicitação <b>devolvida</b> para o mesmo procedimento.</li>
+        <li>Atualizar telefone no cadastro (obrigatório na solicitação) e raça/cor no CadSUS.</li>
+        <li>Inserir durante a consulta, marcar a classificação de risco, a unidade desejada e o nº do conselho.</li>
+        <li>Entregar o <b>código da solicitação</b> ao paciente (acompanha em minhasaude.rio).</li>
+        <li>Devolvidas: responder na íntegra em até 1 mês (sem resposta por 6 meses → cancelada).</li>
+      </ul></div>
+    </div>
+  </section>
+</main>
+
+<div class="bar hidden" id="bar"><div>
+  <button class="btn sec" id="bLimpar">Limpar</button>
+  <button class="btn" id="bGerar">Gerar pedido</button>
+  <button class="btn hidden" id="bCopiar">Copiar</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="protocolos.js"></script>
+<script src="catalogo.js"></script>
+<script src="gerador.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+let filtro = "Todos", atual = null;
+
+/* ---------- LISTA ---------- */
+const CATS = ["Todos", "Consulta", "Exame", "Procedimento", "SER", "Fluxo", "Enfermagem"];
+$("#chips").innerHTML = CATS.map((c) => `<button class="chip${c === filtro ? " on" : ""}" data-c="${c}">${c}</button>`).join("");
+$("#chips").onclick = (e) => { const c = e.target.dataset.c; if (!c) return; filtro = c;
+  document.querySelectorAll(".chip").forEach((b) => b.classList.toggle("on", b.dataset.c === c)); renderLista(); };
+$("#busca").oninput = renderLista;
+
+function renderLista() {
+  const q = norm($("#busca").value.trim());
+  const itens = CATALOGO.filter((i) => (filtro === "Todos" || i.cat === filtro || (filtro === "Enfermagem" && i.enf)) &&
+    (!q || norm(i.nome + " " + i.proc + " " + (i.campos || []).filter((f) => f.id === "nomen").flatMap((f) => f.o).join(" ") + " " + i.crit.filter((c) => c[0] === "h").map((c) => c[1]).join(" ")).includes(q)))
+    .sort((a, b) => a.id === "outro" ? 1 : b.id === "outro" ? -1 : a.nome.localeCompare(b.nome, "pt"));
+  $("#lista").innerHTML = itens.map((i) => `<button class="it" data-id="${i.id}"><b>${esc(i.nome)}</b>${i.enf ? '<span class="tag ENF">ENF</span>' : ""}<span class="tag ${i.cat === "Fluxo" ? "FLX" : i.sis}">${i.cat === "Fluxo" ? "E-MAIL" : i.sis}</span></button>`).join("")
+    || `<p class="meta">Nada encontrado. Use “Outro procedimento”.</p>`;
+}
+$("#lista").onclick = (e) => { const b = e.target.closest(".it"); if (b) abrir(b.dataset.id); };
+
+/* ---------- FORMULÁRIO ---------- */
+function campoHTML(f) {
+  const r = f.req ? ' <span class="req">*</span>' : "";
+  const ph = f.ph ? ` placeholder="${esc(f.ph)}"` : "";
+  if (f.t === "chk") return `<div class="f chk" data-f="${f.id}"><label><input type="checkbox" id="f_${f.id}">${esc(f.l)}${r}</label></div>`;
+  let ctl;
+  if (f.t === "area") ctl = `<textarea id="f_${f.id}"${ph}></textarea>`;
+  else if (f.t === "sel") ctl = `<select id="f_${f.id}">${f.o.map((o) => `<option value="${esc(o)}">${o ? esc(o) : "Selecione…"}</option>`).join("")}</select>`;
+  else ctl = `<input id="f_${f.id}" type="${f.t === "num" ? "number" : "text"}"${f.t === "num" ? ' inputmode="numeric"' : ""}${ph}>`;
+  return `<div class="f" data-f="${f.id}"><label for="f_${f.id}">${esc(f.l)}${r}</label>${ctl}</div>`;
+}
+
+function abrir(id, push = true) {
+  atual = CATALOGO.find((i) => i.id === id);
+  const i = atual;
+  $("#titulo").textContent = i.nome;
+  $("#cabecalho").innerHTML = `<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><span class="tag ${i.sis}">${i.sis}</span>${i.enf ? '<span class="tag ENF">Enfermeiro pode solicitar</span>' : ""}<span class="meta">${esc(i.cat)}</span></div>
+    <div class="meta">${i.email ? "Fluxo" : "Selecionar no sistema"}: <code>${esc(i.proc)}</code></div>
+    <div class="meta" style="margin-top:4px">Regulação: ${esc(i.reg)}</div>
+    ${i.info ? `<ul class="info">${i.info.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+    ${i.nao ? `<p class="nao" style="margin:8px 0 0"><b>Não encaminhar (manejar na APS):</b> ${i.nao.map(esc).join(" · ")}.</p>` : ""}`;
+  $("#cCrit").classList.toggle("hidden", !i.crit.length);
+  $("#crit").innerHTML = renderCrit(i.crit);
+  $("#dicaCrit").classList.toggle("hidden", !i.crit.some((c) => c[0] === "h" && /^Classificação/.test(c[1])));
+  $("#campos").innerHTML = camposDo(i).map((f) => campoHTML(i.ph && i.ph[f.id] && !f.ph ? { ...f, ph: "Protocolo: " + i.ph[f.id] } : f)).join("");
+  $("#vSaida").classList.add("hidden");
+  ["#vLista"].forEach((s) => $(s).classList.add("hidden"));
+  ["#vForm", "#bar", "#voltar"].forEach((s) => $(s).classList.remove("hidden"));
+  $("#bCopiar").classList.add("hidden"); $("#bGerar").textContent = "Gerar pedido";
+  atualizarCor(); scrollTo(0, 0);
+  if (push) history.pushState({ f: id }, "", "#" + id);
+}
+
+function renderCrit(crit) {
+  const linha = ([c, t], k) => `<label class="crit ${c}"><input type="checkbox" data-k="${k}"><span class="dot ${c}"></span><span>${c === "e" ? "EMERGÊNCIA — " : ""}${esc(t)}</span></label>`;
+  if (!crit.some((c) => c[0] === "h")) return crit.map(linha).join("");
+  let html = "", aberto = false;
+  crit.forEach((c, k) => {
+    if (c[0] === "h") {
+      if (aberto) html += "</div></details>";
+      const prio = /^Classificação|^Emergência/.test(c[1]);
+      html += `<details class="grp${prio ? " prio" : ""}"${prio ? " open" : ""}><summary>${esc(c[1])} <span class="cnt"></span></summary><div>`;
+      aberto = true;
+    } else html += linha(c, k);
+  });
+  return html + (aberto ? "</div></details>" : "");
+}
+function marcados() { return [...document.querySelectorAll("#crit input:checked")].map((x) => +x.dataset.k); }
+function valores() {
+  const v = {};
+  for (const f of camposDo(atual)) { const el = $("#f_" + f.id); v[f.id] = f.t === "chk" ? el.checked : el.value; }
+  return v;
+}
+function atualizarCor() {
+  const m = marcados();
+  document.querySelectorAll("#crit details").forEach((d) => { const n = d.querySelectorAll("input:checked").length; d.querySelector(".cnt").textContent = n ? "· " + n + " marcado" + (n > 1 ? "s" : "") : ""; });
+  $("#emerg").classList.toggle("hidden", !temEmergencia(atual, m));
+  const c = corSugerida(atual, m);
+  $("#corAtual").innerHTML = c && c !== "n" ? `Classificação sugerida: <span class="cor"><span class="dot ${c}"></span>${CORES[c].nome}</span> — ${CORES[c].prazo}` : "";
+}
+$("#crit").onchange = atualizarCor;
+$("#campos").oninput = (e) => { const d = e.target.closest(".f"); if (d) d.classList.remove("miss"); };
+$("#campos").onchange = $("#campos").oninput;
+
+$("#bGerar").onclick = () => {
+  const v = valores(), m = marcados();
+  const falt = faltando(atual, v);
+  document.querySelectorAll(".f").forEach((d) => d.classList.toggle("miss", falt.some((f) => f.id === d.dataset.f)));
+  const av = [];
+  if (temEmergencia(atual, m)) av.push(["emerg", "Critério de EMERGÊNCIA marcado — este caso deve ir por Vaga Zero, não pelo SISREG ambulatorial."]);
+  if (falt.length) av.push(["warn", "<b>Campos obrigatórios em branco</b> (risco de pedido DEVOLVIDO): " + falt.map((f) => esc(rotuloCurto(f.l))).join(", ") + "."]);
+  if (atual.crit.length && !m.filter((k) => atual.crit[k][0] !== "e").length) av.push(["warn", "Nenhum critério de encaminhamento marcado — sem critério o pedido tende a ser NEGADO."]);
+  $("#avisos").innerHTML = av.map(([c, t]) => `<div class="alerta ${c}">${t}</div>`).join("");
+  $("#saida").value = gerarTexto(atual, v, m);
+  $("#tituloSaida").firstChild.textContent = atual.email ? "E-mail pronto " : "Pedido pronto ";
+  $("#checklist").classList.toggle("hidden", !!atual.email || atual.id === "cancerinfantil");
+  contar();
+  $("#vSaida").classList.remove("hidden");
+  $("#bCopiar").classList.remove("hidden"); $("#bGerar").textContent = "Atualizar";
+  $("#vSaida").scrollIntoView({ behavior: "smooth" });
+};
+function contar() { $("#cont").textContent = $("#saida").value.length + " caracteres"; }
+$("#saida").oninput = contar;
+
+$("#bCopiar").onclick = async () => {
+  const t = $("#saida").value;
+  try { await navigator.clipboard.writeText(t); }
+  catch { $("#saida").select(); document.execCommand("copy"); }
+  toast("Copiado ✓");
+};
+$("#bLimpar").onclick = () => { if (confirm("Limpar todos os campos?")) abrir(atual.id, false); };
+
+function voltarLista() {
+  atual = null; $("#titulo").textContent = "Pedidos SISREG / SER";
+  ["#vForm", "#bar", "#voltar"].forEach((s) => $(s).classList.add("hidden"));
+  $("#vLista").classList.remove("hidden"); scrollTo(0, 0);
+}
+$("#voltar").onclick = () => history.back();
+addEventListener("popstate", () => { const id = location.hash.slice(1); id && CATALOGO.some((i) => i.id === id) ? abrir(id, false) : voltarLista(); });
+
+function toast(t) { const el = $("#toast"); el.textContent = t; el.classList.add("on"); setTimeout(() => el.classList.remove("on"), 1400); }
+
+renderLista();
+if (location.hash.length > 1 && CATALOGO.some((i) => i.id === location.hash.slice(1))) abrir(location.hash.slice(1), false);
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
